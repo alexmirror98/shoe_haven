@@ -337,6 +337,7 @@ img {
   	height: 200px;
 	border-radius: 12px;
 	border: 8px solid #fff;
+	cursor: pointer;
 }
 .catalog .catalog__items .catalog__item .catalog__item-name {
 	align-self: stretch;
@@ -344,6 +345,7 @@ img {
 	color: var(--text-color);
 	margin-top: 8px;
 	margin-bottom: 8px;
+	cursor: pointer;
 }
 .catalog .catalog__items .catalog__item .catalog__item-btn button{
 	height: 40px;
@@ -355,6 +357,12 @@ img {
 	border-radius: 8px;
 	border: none;
 	cursor: pointer;
+}
+.buy-section {
+	display: flex;
+	align-items: baseline;
+	gap: 15px;
+	flex-direction: row-reverse;
 }
 
 .categories {

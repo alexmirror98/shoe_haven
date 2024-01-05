@@ -54,32 +54,8 @@
         <h1 class="shippingcart">Shopping cart</span></h1>
         
         <div class="cart-container">
-            <div class="product">
-                <a href="product-detail.html"><img  alt=""></a>
-                <div class="product-details">
-                    <h2>Product 1</h2>
-                    <p>Price: $19.99</p>
-                </div>
-                <div class="quantity">
-                    <button>-</button>
-                    <input type="text" value="1">
-                    <button>+</button>
-                </div>
-                <button>Remove</button>
-            </div>
+            <div class="cart">
 
-            <div class="product">
-                <a href="product-detail.html"><img alt=""></a>
-                    <div class="product-details">
-                        <h2>Product 2</h2>
-                        <p>Price: $29.99</p>
-                    </div>
-                <div class="quantity">
-                    <button>-</button>
-                        <input type="text" value="1">
-                    <button>+</button>
-                </div>
-                <button>Remove</button>
             </div>
 
             <div class="total">
@@ -144,8 +120,108 @@
     <script>
         // Funkce na přesměrování
         function shoppingcarttocheckout() {
-                window.location.href = "checkout.html";
+            window.location.href = "checkout.html";
         }
+
+        // Получение данных корзины из cookies
+        function getCartFromCookies() {
+            var cartCookie = (
+                document.cookie.split("; ").find((row) => row.startsWith("cart=")) ||
+                "cart=[]"
+            ).split("=")[1];
+            return JSON.parse(decodeURIComponent(cartCookie));
+        }
+
+        // Создание элементов корзины
+        function createCartItems(cart) {
+            const cartContainer = document.querySelector(".cart");
+            cartContainer.innerHTML = ""; // Очистка текущего содержимого контейнера корзины
+            cart.forEach((item) => {
+                const productDiv = document.createElement("div");
+                productDiv.className = "product";
+                productDiv.dataset.productName = item.name;
+
+                productDiv.innerHTML = `
+            <a href="product-detail.html"><img src="${item.img}" alt="${item.name}"></a>
+            <div class="product-details">
+                <h2>${item.name}</h2>
+                <p>Price: $${item.price}</p>
+            </div>
+            <div class="quantity">
+                <button>-</button>
+                <input type="text" value="${item.quantity}">
+                <button>+</button>
+            </div>
+            <button>Remove</button>
+        `;
+
+                cartContainer.appendChild(productDiv);
+            });
+        }
+
+        // Расчет общей стоимости
+        function calculateTotal(cart) {
+            var total = cart.reduce(
+                (acc, item) => acc + item.price * item.quantity,
+                0
+            );
+            document.querySelector(".total p").innerHTML = `Total: $${total.toFixed(
+                2
+            )}`;
+        }
+
+        // Обновление количества товара
+        function updateQuantity(productName, newQuantity) {
+            var cart = getCartFromCookies();
+            var product = cart.find((p) => p.name === productName);
+
+            if (product) {
+                product.quantity = newQuantity;
+                // Обновление cookies
+                document.cookie =
+                    "cart=" +
+                    encodeURIComponent(JSON.stringify(cart)) +
+                    ";path=/;max-age=86400";
+                // Обновление отображаемого количества и пересчет общей стоимости
+                document.querySelector(
+                    `[data-product-name="${productName}"] .quantity input`
+                ).value = newQuantity;
+                calculateTotal(cart);
+            }
+        }
+
+        // Инициализация корзины
+        function initializeCart() {
+            var cart = getCartFromCookies();
+            createCartItems(cart); // Создание элементов корзины
+
+            // Назначение обработчиков событий на кнопки + и -
+            document
+                .querySelectorAll(".product .quantity button")
+                .forEach((button) => {
+                    button.addEventListener("click", function () {
+                        var productName = this.closest(".product").dataset.productName;
+                        var quantityInput =
+                            this.closest(".quantity").querySelector("input");
+                        var currentQuantity = parseInt(quantityInput.value);
+
+                        if (this.textContent === "+") {
+                            updateQuantity(productName, currentQuantity + 1);
+                        } else if (this.textContent === "-") {
+                            if (currentQuantity > 1) {
+                                updateQuantity(productName, currentQuantity - 1);
+                            }
+                        }
+                    });
+                });
+
+            calculateTotal(cart);
+        }
+
+        // Вызов инициализации при загрузке страницы
+        document.addEventListener("DOMContentLoaded", () => {
+            initializeCart();
+        });
     </script>
 </body>
 
