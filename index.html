@@ -529,31 +529,46 @@
       function redirectToProductDetail() {
         window.location.href = "product-detail.html";
       }
+      function parsePrice(priceStr) {
+        return parseFloat(priceStr.replace("$", ""));
+      }
 
-      document.querySelectorAll('.catalog__item-btn').forEach(function(button) {
-    button.addEventListener('click', function() {
-        var itemName = this.closest('.catalog__item').querySelector('.catalog__item-name').innerText;
-        var itemPrice = this.closest('.catalog__item').querySelector('.price').innerText;
-        
-        // Получение текущей корзины из cookies
-        var cart = (document.cookie.split('; ').find(row => row.startsWith('cart=')) || 'cart=[]').split('=')[1];
-        cart = JSON.parse(decodeURIComponent(cart));
+      document
+        .querySelectorAll(".catalog__item-btn")
+        .forEach(function (button) {
+          button.addEventListener("click", function () {
+            var itemName = this.closest(".catalog__item").querySelector(
+              ".catalog__item-name"
+            ).innerText;
+            var itemPrice =parsePrice(this.closest(".catalog__item").querySelector(".price").innerText);              
 
-        // Поиск продукта в корзине
-        var productIndex = cart.findIndex(p => p.name === itemName && p.price === itemPrice);
-        
-        // Обновление корзины
-        if (productIndex > -1) {
-            cart[productIndex].quantity += 1; // Увеличиваем количество
-        } else {
-            cart.push({ name: itemName, price: itemPrice, quantity: 1 }); // Добавляем новый продукт
-        }
+            // Получение текущей корзины из cookies
+            var cart = (
+              document.cookie
+                .split("; ")
+                .find((row) => row.startsWith("cart=")) || "cart=[]"
+            ).split("=")[1];
+            cart = JSON.parse(decodeURIComponent(cart));
 
-        // Сохранение обновленной корзины в cookies
-        document.cookie = "cart=" + encodeURIComponent(JSON.stringify(cart)) + ";path=/;max-age=86400"; // Срок действия 1 день
-    });
-});
+            // Поиск продукта в корзине
+            var productIndex = cart.findIndex(
+              (p) => p.name === itemName && p.price === itemPrice
+            );
 
+            // Обновление корзины
+            if (productIndex > -1) {
+              cart[productIndex].quantity += 1; // Увеличиваем количество
+            } else {
+              cart.push({ name: itemName, price: itemPrice, quantity: 1 }); // Добавляем новый продукт
+            }
+
+            // Сохранение обновленной корзины в cookies
+            document.cookie =
+              "cart=" +
+              encodeURIComponent(JSON.stringify(cart)) +
+              ";path=/;max-age=86400"; // Срок действия 1 день
+          });
+        });
     </script>
   </body>
 </html>
