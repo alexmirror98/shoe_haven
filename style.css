@@ -344,6 +344,7 @@ img {
 	color: var(--text-color);
 	margin-top: 8px;
 	margin-bottom: 8px;
+    cursor: pointer;
 }
 .catalog .catalog__items .catalog__item .catalog__item-btn button{
 	height: 40px;
